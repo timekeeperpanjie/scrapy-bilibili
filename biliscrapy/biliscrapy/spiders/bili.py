@@ -12,10 +12,14 @@ class BiliSpider(scrapy.Spider):
         for selector in selectors:
             title = selector.xpath("./a/@title").extract_first()
             up_name = selector.xpath("./div/div[3]/span[4]/a/text()").extract_first()
+            play_time = selector.xpath("./div/div[3]/span[1]/i/text()").extract_first()
+            time = selector.xpath("./div/div[3]/span[3]/i/text()").extract_first()
             links = selector.xpath("./a/@href").extract_first()
             items = {
 				'title':title,
 				'upname':up_name,
+				'playtime':play_time,
+				'time':time,
 				'links':links
             }
             yield items
