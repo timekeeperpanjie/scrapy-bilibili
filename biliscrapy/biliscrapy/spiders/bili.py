@@ -5,10 +5,10 @@ import scrapy
 class BiliSpider(scrapy.Spider):
     name = "bili"
     allowed_domains = ["https://bilibili.com"]
-    start_urls = ["https://search.bilibili.com/all?keyword=%E5%86%A0%E7%8A%B6%E7%97%85%E6%AF%92&from_source=nav_search_new&page=1"]
+    start_urls = [f'https://search.bilibili.com/all?keyword=%E5%86%A0%E7%8A%B6%E7%97%85%E6%AF%92&from_source=nav_search_new&page={page}' for page in range(1,40)]
 
     def parse(self, response):
-        selectors = response.xpath("//ul/li")
+        selectors = response.xpath("//div[@class]/ul/li[@class]")
         for selector in selectors:
             title = selector.xpath("./a/@title").extract_first()
             up_name = selector.xpath("./div/div[3]/span[4]/a/text()").extract_first()
