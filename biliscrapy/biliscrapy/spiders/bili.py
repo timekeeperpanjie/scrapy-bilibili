@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
 import scrapy
-
+import json
+import time
 
 class BiliSpider(scrapy.Spider):
-    name = "bili"
+    name = "math"
     allowed_domains = ["https://bilibili.com"]
-    start_urls = [f'https://search.bilibili.com/all?keyword=%E5%86%A0%E7%8A%B6%E7%97%85%E6%AF%92&from_source=nav_search_new&page={page}' for page in range(1,40)]
+    start_urls = [f'https://api.bilibili.com/x/tag/ranking/archives?tag_id=936917&rid=39&type=0&pn={page}&ps=20' for page in range(1,5)]
 
     def parse(self, response):
-        selectors = response.xpath("//div[@class]/ul/li[@class]")
-        for selector in selectors:
-            title = selector.xpath("./a/@title").extract_first()
-            up_name = selector.xpath("./div/div[3]/span[4]/a/text()").extract_first()
-            play_time = selector.xpath("./div/div[3]/span[1]/i/text()").extract_first()
-            time = selector.xpath("./div/div[3]/span[3]/i/text()").extract_first()
-            links = selector.xpath("./a/@href").extract_first()
+        selectors = json.loads(response.text)['data']['archives']
+        for sel in selectors:
+            title = sel['title']
+            desc = sel['desc']
+            date = time.localtime(float(sel['pubdate']))
+            link = "%s%s" % ("https://www.bilibili.com/video/av",sel['aid'])
             items = {
-				'title':title,
-				'upname':up_name,
-				'playtime':play_time,
-				'time':time,
-				'links':links
+                'title':title,
+                'desc':desc,
+                'date':time.strftime("%Y-%m-%d %H:%M:%S",date),
+                'link':link
             }
             yield items
